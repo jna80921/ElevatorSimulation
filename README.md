@@ -8,7 +8,7 @@ This class **Elevator** is the key entity of this model and attempts to model an
 
 A summary of keys methods are given below:
 
-- **Elevator(int maxFloors, int stopDurationInSeconds, int maxTotalWeightLbs):** This is the constructor for the Elevator class. It initializes the elevator with the specified number of floors, the time it takes to stop at each floor, and the maximum total weight the elevator can carry. It also initializes the elevator's current floor, direction, and weight.
+- **Elevator(int maxFloors, int stopDurationInSeconds, int maxTotalWeightLbs):** This is the constructor for the Elevator class. It initializes the elevator with the specified number of floors, the time it takes to stop at each floor, and the maximum total cargo weight the elevator can carry. 
 
 - **pressExternalUpButton(int floor):** Adds an external up button press to the elevator's queue.
 
@@ -16,11 +16,11 @@ A summary of keys methods are given below:
 
 - **pressInternalButton(int floor):** Adds an internal button press to the elevator's queue.
 
-- **addWeightLbs(int WeightLbs):** Increases the current weight of the elevator and pauses if weight limit is exceeded.
+- **addWeightLbs(int WeightLbs):** Increases the current cargo weight of the elevator and pauses if weight limit is exceeded.
 
-- **reduceWeightLbs(int WeightLbs):** Reduces the current weight of the elevator and resumes if weight falls below the limit.
+- **reduceWeightLbs(int WeightLbs):** Reduces the current cargo weight of the elevator and resumes if weight falls below the limit.
 
-- **getGetCurrentWeightLbs():** Retrieves the current weight of the elevator.
+- **getGetCurrentWeightLbs():** Retrieves the current cargo weight of the elevator.
 
 - **pause():** Pauses the elevator operation.
 
