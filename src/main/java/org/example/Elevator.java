@@ -122,27 +122,11 @@ public class Elevator {
                     }
                 }
                 while (!(externalUpButtons.isEmpty() && externalDownButtons.isEmpty() && internalButtons.isEmpty())) {
-                    if (direction == Direction.UP && externalUpButtons.contains(currentFloor)) {
-                        stopAtCurrentFloor();
-                    } else if (direction == Direction.DOWN && externalDownButtons.contains(currentFloor)) {
-                        stopAtCurrentFloor();
-                    } else if (internalButtons.contains(currentFloor)) {
+                    if (shouldStopAtCurrentFloor()) {
                         stopAtCurrentFloor();
                     }
 
-                    if (direction == Direction.UP) {
-                        if (currentFloor < maxFloors) {
-                            currentFloor++;
-                        } else {
-                            direction = Direction.DOWN;
-                        }
-                    } else {
-                        if (currentFloor > 1) {
-                            currentFloor--;
-                        } else {
-                            direction = Direction.UP;
-                        }
-                    }
+                    moveToNextFloor();
                 }
                 System.out.println("Elevator waiting.  No buttons pressed at the moment...");
                 try {
@@ -152,6 +136,28 @@ public class Elevator {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Preserve the interrupt status
             System.out.println("Elevator thread interrupted. Exiting...");
+        }
+    }
+
+    private boolean shouldStopAtCurrentFloor() {
+        return (direction == Direction.UP && externalUpButtons.contains(currentFloor)) ||
+                (direction == Direction.DOWN && externalDownButtons.contains(currentFloor)) ||
+                internalButtons.contains(currentFloor);
+    }
+
+    private void moveToNextFloor() {
+        if (direction == Direction.UP) {
+            if (currentFloor < maxFloors) {
+                currentFloor++;
+            } else {
+                direction = Direction.DOWN;
+            }
+        } else {
+            if (currentFloor > 1) {
+                currentFloor--;
+            } else {
+                direction = Direction.UP;
+            }
         }
     }
 
