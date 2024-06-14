@@ -4,14 +4,16 @@ class ElevatorSimulationRun {
     public static void main(String[] args) {
         try {
 
-            Cargo c1 = new Cargo(1, 200, 2, 7);
-            Cargo c2 = new Cargo(2, 2000, 4, 8);  // This must be a cargo of gold bars.
-            Cargo c3 = new Cargo(3, 300, 3, 1);
-            Cargo c4 = new Cargo(4, 200, 2, 1);
-            Cargo c5 = new Cargo(5, 150, 12, 0);
+            ExternalButtonTracker bt = new ExternalButtonTracker();  // Represents the external up/down button control tracker
+
+            Cargo c1 = new Cargo(1, 200, 2, 7, bt);
+            Cargo c2 = new Cargo(2, 2000, 4, 8, bt);  // This must be a cargo of gold bars.
+            Cargo c3 = new Cargo(3, 300, 3, 1, bt);
+            Cargo c4 = new Cargo(4, 200, 2, 1, bt);
+            Cargo c5 = new Cargo(5, 150, 12, 0, bt);
 
             // Initialize elevator for: 12 floors, 5 seconds per stop and a max weight of 1000 pounds
-            Elevator elevator = new Elevator(12, 5, 1000);
+            Elevator elevator = new Elevator(12, 5, 1000, bt);
 
             elevator.startMoving();  // Elevator begins operation
 

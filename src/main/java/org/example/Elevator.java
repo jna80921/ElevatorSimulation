@@ -4,39 +4,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Elevator {
-    private final int maxFloors;                   // Configurable max floors
-    private final int stopDurationInSeconds;       // To simulate time it takes to stop at each floor
-    private final int maxTotalWeightLbs;           // Configurable maximum total WeightLbs
-    private final Set<Integer> externalUpButtons;
-    private final Set<Integer> externalDownButtons;
+    private final int maxFloors;
+    private final int stopDurationInSeconds;
+    private final int maxTotalWeightLbs;
+    private final ExternalButtonTracker externalButtonTracker; // Use ExternalButtonTracker
     private final Set<Integer> internalButtons;
     private int currentFloor;
     private Direction direction;
-    private int currentWeightLbs;                  // Track total current WeightLbs
+    private int currentWeightLbs;
 
     private final Object elevatorLock = new Object();
     private boolean isPaused;
 
-    public Elevator(int maxFloors, int stopDurationInSeconds, int maxTotalWeightLbs) {
+    public Elevator(int maxFloors, int stopDurationInSeconds, int maxTotalWeightLbs, ExternalButtonTracker externalButtonTracker) {
         this.maxFloors = maxFloors;
         this.stopDurationInSeconds = stopDurationInSeconds;
         this.maxTotalWeightLbs = maxTotalWeightLbs;
-        this.externalUpButtons = new HashSet<>();
-        this.externalDownButtons = new HashSet<>();
+        this.externalButtonTracker = externalButtonTracker;
         this.internalButtons = new HashSet<>();
         this.currentFloor = 1;
         this.direction = Direction.UP;
         this.currentWeightLbs = 0;
-    }
-
-    public void pressExternalUpButton(int floor) {
-        if (isValidFloor(floor))
-            externalUpButtons.add(floor);
-    }
-
-    public void pressExternalDownButton(int floor) {
-        if (isValidFloor(floor))
-            externalDownButtons.add(floor);
     }
 
     public void pressInternalButton(int floor) {
@@ -113,38 +101,6 @@ public class Elevator {
         elevatorThread.start();
     }
 
-    private void move() {
-        try {
-            while (true) {
-                synchronized (elevatorLock) {
-                    while (isPaused) {
-                        elevatorLock.wait(); // Wait until resumed
-                    }
-                }
-                while (!(externalUpButtons.isEmpty() && externalDownButtons.isEmpty() && internalButtons.isEmpty())) {
-                    if (shouldStopAtCurrentFloor()) {
-                        stopAtCurrentFloor();
-                    }
-
-                    moveToNextFloor();
-                }
-                System.out.println("Elevator waiting.  No buttons pressed at the moment...");
-                try {
-                    Util.wait(5);
-                } catch (Exception _) {}
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt(); // Preserve the interrupt status
-            System.out.println("Elevator thread interrupted. Exiting...");
-        }
-    }
-
-    private boolean shouldStopAtCurrentFloor() {
-        return (direction == Direction.UP && externalUpButtons.contains(currentFloor)) ||
-                (direction == Direction.DOWN && externalDownButtons.contains(currentFloor)) ||
-                internalButtons.contains(currentFloor);
-    }
-
     private void moveToNextFloor() {
         if (direction == Direction.UP) {
             if (currentFloor < maxFloors) {
@@ -161,13 +117,42 @@ public class Elevator {
         }
     }
 
+    private void move() {
+        try {
+            while (true) {
+                synchronized (elevatorLock) {
+                    while (isPaused) {
+                        elevatorLock.wait(); // Wait until resumed
+                    }
+                }
+                while (!(externalButtonTracker.isEmpty() && internalButtons.isEmpty())) {
+                    if (shouldStopAtCurrentFloor()) {
+                        stopAtCurrentFloor();
+                    }
+                    moveToNextFloor();
+                }
+                System.out.println("Elevator waiting. No buttons pressed at the moment...");
+                Util.wait(5);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Preserve the interrupt status
+            System.out.println("Elevator thread interrupted. Exiting...");
+        }
+    }
+
+    private boolean shouldStopAtCurrentFloor() {
+        return (direction == Direction.UP && externalButtonTracker.hasUpButton(currentFloor)) ||
+                (direction == Direction.DOWN && externalButtonTracker.hasDownButton(currentFloor)) ||
+                internalButtons.contains(currentFloor);
+    }
+
     private void stopAtCurrentFloor() {
         System.out.println("Elevator stopped at floor " + currentFloor);
         Util.wait(stopDurationInSeconds);
         if (direction.equals(Direction.UP))
-            externalUpButtons.remove(currentFloor);   // Unset external button in the direction of the elevator
+            externalButtonTracker.clearUpButton(currentFloor);   // Unset external button in the direction of the elevator
         if (direction.equals(Direction.DOWN))
-            externalDownButtons.remove(currentFloor); // Unset external button in the direction of the elevator
+            externalButtonTracker.clearDownButton(currentFloor); // Unset external button in the direction of the elevator
         internalButtons.remove(currentFloor);         // Unset buttons for current floor when Elevator stops there
     }
 
@@ -183,4 +168,5 @@ public class Elevator {
         return this.elevatorLock;
     }
 }
+
 

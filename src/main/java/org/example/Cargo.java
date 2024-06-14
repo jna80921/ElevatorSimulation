@@ -6,8 +6,9 @@ public class Cargo {
     private final int startFloor;
     private final int targetFloor;
     private final Direction direction;
+    private final ExternalButtonTracker externalButtonTracker; // Use ExternalButtonTracker
 
-    public Cargo(int id, int weightLbs, int startFloor, int targetFloor) {
+    public Cargo(int id, int weightLbs, int startFloor, int targetFloor, ExternalButtonTracker bt) {
         this.id = id;
         this.weightLbs = weightLbs;
         this.startFloor = startFloor;
@@ -16,6 +17,7 @@ public class Cargo {
             direction = Direction.UP;
         else
             direction = Direction.DOWN;
+        this.externalButtonTracker = bt;
     }
 
     // Method to initiate the cargo boarding process, starting from pressing the external button
@@ -39,17 +41,17 @@ public class Cargo {
 
     private void startBoardingProcess(Elevator elevator) {
         if (startFloor < targetFloor) {
-            elevator.pressExternalUpButton(startFloor);
-            System.out.println(String.format("Cargo %d press UP button from floor %d going to floor %d...", id, startFloor, targetFloor));
+            externalButtonTracker.pressUpButton(startFloor);
+            System.out.printf("Cargo %d press UP button from floor %d going to floor %d...%n", id, startFloor, targetFloor);
         } else {
-            elevator.pressExternalDownButton(startFloor);
-            System.out.println(String.format("Cargo %d press DOWN button from floor %d going to floor %d...", id, startFloor, targetFloor));
+            externalButtonTracker.pressDownButton(startFloor);
+            System.out.printf("Cargo %d press DOWN button from floor %d going to floor %d...%n", id, startFloor, targetFloor);
         }
         while (!(elevator.getCurrentFloor() == startFloor && elevator.getDirection() == this.direction))
             Util.wait(1);
         elevator.addWeightLbs(weightLbs);
         if (elevator.isPaused()) {           // Excess weight will trigger isPaused condition
-            System.out.println(String.format("Max elevator cargo weight exceeded, cargo %s disembarking.", id));
+            System.out.printf("Max elevator cargo weight exceeded, cargo %s disembarking.%n", id);
             elevator.reduceWeightLbs(weightLbs);   // Assume if cargo causing excess weight will disembark
         } else {
             elevator.pressInternalButton(targetFloor);
