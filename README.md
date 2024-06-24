@@ -168,7 +168,9 @@ public class ElevatorSimulationRun {
 - **Direction**: Enum representing the direction of the elevator.
 
 ## Guiding Specifications and Assumptions:
+- There is just 1 Elevator (not a bank of multiple Elevators). 
 - The Elevator will keep track of which floors require a stop.
+- Lowest floor is 1.  Max floor is N (configurable).  All intermediate floors are valid. 
 - The available inputs to indicate which floor the Elevator stops are:
   - The external up button for a given floor is pressed and the Elevator headed that direction or is idle
   - The external down button for a given floor is pressed and the Elevator headed that direction or is idle
