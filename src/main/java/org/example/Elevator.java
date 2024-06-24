@@ -104,12 +104,14 @@ public class Elevator {
     private void moveToNextFloor() {
         if (direction == Direction.UP) {
             if (currentFloor < maxFloors) {
+                Util.wait(this.stopDurationInSeconds);  // Time it takes to move 1 floor
                 currentFloor++;
             } else {
                 direction = Direction.DOWN;
             }
         } else {
             if (currentFloor > 1) {
+                Util.wait(this.stopDurationInSeconds);  // Time it takes to move 1 floor
                 currentFloor--;
             } else {
                 direction = Direction.UP;

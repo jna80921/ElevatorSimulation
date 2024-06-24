@@ -176,6 +176,8 @@ public class ElevatorSimulationRun {
 - There is one internal button for each floor for a maximum of N floors (configurable)
 - There is one external up button and one external down botton per floor.
 - It takes N (configurable) seconds per Elevator stop (to roughly simulate the delays with stops/loading/unloading/door open and close).
+- Each floor door will open and close with each Elevator stop without doors being held up.
+- NOTE: Theoretically, doors being held up and released can be modeled with independent calls to the Elevator pause() and resume() methods.
 - The Elevator will keep going the same direction while buttons both internal and external are pressed in that direction.
 - The Elevator will wait in place when no pressed buttons detected.
 - The Elevator will reverse direction when no buttons are pressed in the current direction and there are some buttons presses in the reverse direction.
